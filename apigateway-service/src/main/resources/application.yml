@@ -1,0 +1,145 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-login
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+
+        - id: user-service-logout
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/logout
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: user-service-users
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+
+        - id: user-service-admin
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/admin
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+
+        - id: user-service-get
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-play
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/play
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-pause
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/pause
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-ads
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/ads
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-ads-get
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/ads
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-ads-create
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/ads/create
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-videos-post
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/**
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-videos-get
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-video-ad-counts
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/{videoId}/ads/{adId}/counts
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/videos/(?<videoId>.*)/ads/(?<adId>.*)/counts, /videos/${videoId}/ads/${adId}/counts
+            - AuthorizationHeaderFilter
+
+token:
+  secret: "A9F2C3E4B5D6A7F8G9H0J1K2L3M4N5O6A9F2C3E4B5D6A7F8G9H0J1K2L3M4N5O6"

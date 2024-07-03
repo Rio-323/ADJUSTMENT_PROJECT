@@ -1,0 +1,10 @@
+services:
+  my-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: mydb
+    volumes:
+      - /Users/ksy/Desktop/mysql-data:/var/lib/mysql
+    ports:
+      - 3306:3306
