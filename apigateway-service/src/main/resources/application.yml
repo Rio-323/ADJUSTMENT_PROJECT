@@ -141,5 +141,25 @@ spring:
             - RewritePath=/streaming-service/videos/(?<videoId>.*)/ads/(?<adId>.*)/counts, /videos/${videoId}/ads/${adId}/counts
             - AuthorizationHeaderFilter
 
+        - id: streaming-service-video-statistics-views
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/api/v1/videos/top5/views
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-video-statistics-duration
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/api/v1/videos/top5/duration
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
 token:
   secret: "A9F2C3E4B5D6A7F8G9H0J1K2L3M4N5O6A9F2C3E4B5D6A7F8G9H0J1K2L3M4N5O6"

@@ -2,7 +2,9 @@ package com.example.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +29,10 @@ public class VideoEntity {
 
     @Column(nullable = false)
     private int duration;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; // 비디오가 생성된 날짜 및 시간
 
     @ElementCollection
     private Map<String, Integer> userWatchPositions = new HashMap<>();

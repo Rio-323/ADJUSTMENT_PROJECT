@@ -3,5 +3,5 @@ include 'eureka-server'
 include 'apigateway-service'
 include 'user-service'
 include 'streaming-service'
-
+include 'batch-service'
 
