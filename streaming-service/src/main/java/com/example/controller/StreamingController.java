@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class StreamingController {
         this.streamingService = streamingService;
     }
 
+    // 비디오 재생 요청을 처리
     @PostMapping("/play")
     public ResponseEntity<Void> playVideo(@RequestBody PlayRequest playRequest) {
         logger.debug("Received play video request: {}", playRequest);
@@ -33,6 +35,7 @@ public class StreamingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 비디오 일시 정지 요청을 처리
     @PostMapping("/pause")
     public ResponseEntity<Void> pauseVideo(@RequestBody PauseRequest pauseRequest) {
         logger.debug("Received pause video request: {}", pauseRequest);
@@ -40,6 +43,7 @@ public class StreamingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 광고 시청 요청을 처리
     @PostMapping("/ads")
     public ResponseEntity<Void> adWatched(@RequestBody AdWatchedRequest adWatchedRequest) {
         logger.debug("Received ad watched request for adId: {}", adWatchedRequest.getAdId());
@@ -47,36 +51,59 @@ public class StreamingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 비디오 생성 요청을 처리
     @PostMapping("/videos")
     public ResponseEntity<VideoEntity> createVideo(@RequestBody CreateVideoRequest createVideoRequest) {
-        logger.debug("Received request to create video: {}", createVideoRequest);
-        VideoEntity createdVideo = streamingService.createVideo(createVideoRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdVideo);
+        VideoEntity video = streamingService.createVideo(createVideoRequest);
+        return ResponseEntity.ok(video);
     }
 
+    // 광고 생성 요청을 처리
     @PostMapping("/ads/create")
-    public ResponseEntity<Void> createAd(@RequestBody CreateAdRequest createAdRequest, @RequestHeader("Authorization") String token) {
-        logger.debug("Received request to create ad: {}", createAdRequest);
-        streamingService.createAd(createAdRequest, token);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<AdEntity> createAd(@RequestBody CreateAdRequest createAdRequest,
+                                             @RequestHeader("Authorization") String token) {
+        AdEntity ad = streamingService.createAd(createAdRequest, token);
+        return ResponseEntity.ok(ad);
     }
 
+    // 모든 광고를 조회하는 요청을 처리
     @GetMapping("/ads")
-    public ResponseEntity<List<AdEntity>> getAllAds() {
-        logger.debug("Received request to get all ads");
-        List<AdEntity> ads = streamingService.getAllAds();
-        return ResponseEntity.status(HttpStatus.OK).body(ads);
+    public ResponseEntity<List<AdDto>> getAllAds() {
+        List<AdDto> ads = streamingService.getAllAds();
+        return ResponseEntity.ok(ads);
     }
 
+    // 모든 비디오를 조회하는 요청을 처리
     @GetMapping("/videos")
-    public ResponseEntity<List<VideoEntity>> getAllVideos() {
-        logger.debug("Received request to get all videos");
-        List<VideoEntity> videos = streamingService.getAllVideos();
-        return ResponseEntity.status(HttpStatus.OK).body(videos);
+    public ResponseEntity<List<VideoDto>> getAllVideos() {
+        List<VideoDto> videos = streamingService.getAllVideos();
+        return ResponseEntity.ok(videos);
     }
 
-    @GetMapping("/videos/{videoId}/ads/{adId}/counts")
-    public Map<String, Integer> getVideoAndAdCounts(@PathVariable Long videoId, @PathVariable Long adId) {
-        return streamingService.getVideoAndAdCounts(videoId, adId);
+    // 특정 비디오와 광고의 전체 시청 수를 조회하는 요청을 처리
+    @GetMapping("/counts")
+    public ResponseEntity<Map<String, Integer>> getVideoAndAdCounts(@RequestParam Long videoId,
+                                                                    @RequestParam Long adId) {
+        logger.debug("Received request to get video and ad counts for videoId: {} and adId: {}", videoId, adId);
+        Map<String, Integer> counts = streamingService.getVideoAndAdCounts(videoId, adId);
+        return ResponseEntity.status(HttpStatus.OK).body(counts);
+    }
+
+    // 특정 비디오의 일별 시청 수를 조회하는 요청을 처리
+    @GetMapping("/videos/{videoId}/daily-views")
+    public ResponseEntity<List<VideoDailyViewCountDto>> getDailyVideoViewCount(@PathVariable Long videoId, @RequestParam String date) {
+        logger.debug("Received request to get daily video view count for videoId: {} on date: {}", videoId, date);
+        LocalDate localDate = LocalDate.parse(date);
+        List<VideoDailyViewCountDto> dailyViewCounts = streamingService.getDailyVideoViewCount(videoId, localDate);
+        return ResponseEntity.status(HttpStatus.OK).body(dailyViewCounts);
+    }
+
+    // 특정 광고의 일별 시청 수를 조회하는 요청을 처리
+    @GetMapping("/ads/{adId}/daily-views")
+    public ResponseEntity<List<AdDailyViewCountDto>> getDailyAdViewCount(@PathVariable Long adId, @RequestParam String date) {
+        logger.debug("Received request to get daily ad view count for adId: {} on date: {}", adId, date);
+        LocalDate localDate = LocalDate.parse(date);
+        List<AdDailyViewCountDto> dailyViewCounts = streamingService.getDailyAdViewCount(adId, localDate);
+        return ResponseEntity.status(HttpStatus.OK).body(dailyViewCounts);
     }
 }

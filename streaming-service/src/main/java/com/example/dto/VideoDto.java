@@ -4,11 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoDto {
+    private Long id;
     private String title;
+    private String url;
     private int viewCount;
-    private int durationOrPlayTime; // 실제 재생 시간 또는 비디오 길이
+    private int duration;
+    private List<AdDto> ads;
 }

@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,11 +33,16 @@ public class VideoEntity {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 비디오가 생성된 날짜 및 시간
+    private LocalDateTime createdAt;
 
     @ElementCollection
     private Map<String, Integer> userWatchPositions = new HashMap<>();
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<AdEntity> ads;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "video_ad",
+            joinColumns = @JoinColumn(name = "video_id"),
+            inverseJoinColumns = @JoinColumn(name = "ad_id")
+    )
+    private List<AdEntity> ads;
 }

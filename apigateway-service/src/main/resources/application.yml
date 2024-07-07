@@ -114,7 +114,7 @@ spring:
         - id: streaming-service-videos-post
           uri: lb://STREAMING-SERVICE
           predicates:
-            - Path=/streaming-service/videos/**
+            - Path=/streaming-service/videos
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
@@ -131,30 +131,30 @@ spring:
             - RewritePath=/streaming-service/(?<segment>.*), /${segment}
             - AuthorizationHeaderFilter
 
-        - id: streaming-service-video-ad-counts
+        - id: streaming-service-counts
           uri: lb://STREAMING-SERVICE
           predicates:
-            - Path=/streaming-service/videos/{videoId}/ads/{adId}/counts
-            - Method=GET
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/streaming-service/videos/(?<videoId>.*)/ads/(?<adId>.*)/counts, /videos/${videoId}/ads/${adId}/counts
-            - AuthorizationHeaderFilter
-
-        - id: streaming-service-video-statistics-views
-          uri: lb://STREAMING-SERVICE
-          predicates:
-            - Path=/streaming-service/api/v1/videos/top5/views
+            - Path=/streaming-service/counts
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/streaming-service/(?<segment>.*), /${segment}
             - AuthorizationHeaderFilter
 
-        - id: streaming-service-video-statistics-duration
+        - id: streaming-service-video-daily-views
           uri: lb://STREAMING-SERVICE
           predicates:
-            - Path=/streaming-service/api/v1/videos/top5/duration
+            - Path=/streaming-service/videos/{videoId}/daily-views
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-ad-daily-views
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/ads/{adId}/daily-views
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie

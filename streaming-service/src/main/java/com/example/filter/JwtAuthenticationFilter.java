@@ -1,7 +1,7 @@
 package com.example.filter;
 
 import com.example.dto.UserResponse;
-import com.example.service.UserServiceClient;
+import com.example.client.UserServiceClient;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;

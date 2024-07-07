@@ -1,7 +1,7 @@
 package com.example.security;
 
 import com.example.filter.JwtAuthenticationFilter;
-import com.example.service.UserServiceClient;
+import com.example.client.UserServiceClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/ads/create").hasAuthority("ADMIN")
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
