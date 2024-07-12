@@ -31,7 +31,6 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /${segment}
-            - AuthorizationHeaderFilter
 
         - id: user-service-users
           uri: lb://USER-SERVICE
@@ -155,6 +154,37 @@ spring:
           uri: lb://STREAMING-SERVICE
           predicates:
             - Path=/streaming-service/ads/{adId}/daily-views
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        # 새로운 경로 추가
+        - id: streaming-service-daily-views
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/daily-views
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-weekly-views
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/weekly-views
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/streaming-service/(?<segment>.*), /${segment}
+            - AuthorizationHeaderFilter
+
+        - id: streaming-service-monthly-views
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/streaming-service/videos/monthly-views
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie

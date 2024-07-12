@@ -137,28 +137,6 @@ public class StreamingService {
         return videos.stream().map(this::convertToVideoDto).collect(Collectors.toList());
     }
 
-
-    private VideoDto convertToVideoDto(VideoEntity video) {
-        VideoDto videoDto = new VideoDto();
-        videoDto.setId(video.getId());
-        videoDto.setTitle(video.getTitle());
-        videoDto.setUrl(video.getUrl());
-        videoDto.setViewCount(video.getViewCount());
-        videoDto.setDuration(video.getDuration());
-        videoDto.setAds(video.getAds().stream().map(this::convertToAdDto).collect(Collectors.toList()));
-        return videoDto;
-    }
-
-    private AdDto convertToAdDto(AdEntity ad) {
-        AdDto adDto = new AdDto();
-        adDto.setId(ad.getId());
-        adDto.setTitle(ad.getTitle());
-        adDto.setUrl(ad.getUrl());
-        adDto.setViewCount(ad.getViewCount());
-        adDto.setVideoIds(ad.getVideos().stream().map(VideoEntity::getId).collect(Collectors.toList()));
-        return adDto;
-    }
-
     // 특정 비디오와 광고의 전체 시청 수를 조회하는 메서드
     public Map<String, Integer> getVideoAndAdCounts(Long videoId, Long adId) {
         VideoEntity video = videoRepository.findById(videoId).orElseThrow();
@@ -187,6 +165,53 @@ public class StreamingService {
         AdEntity ad = adRepository.findById(adId).orElseThrow();
         List<AdDailyViewCount> dailyViewCounts = adDailyViewCountRepository.findByAdAndDateBetween(ad, date, date);
         return dailyViewCounts.stream().map(this::convertToAdDailyViewCountDto).collect(Collectors.toList());
+    }
+
+    public List<VideoDailyViewCountDto> getDailyVideoStatistics(LocalDate date) {
+        return videoDailyViewCountRepository.findByDate(date).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<VideoDailyViewCountDto> getWeeklyVideoStatistics(LocalDate startDate, LocalDate endDate) {
+        return videoDailyViewCountRepository.findByDateBetween(startDate, endDate).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<VideoDailyViewCountDto> getMonthlyVideoStatistics(LocalDate startDate, LocalDate endDate) {
+        return videoDailyViewCountRepository.findByDateBetween(startDate, endDate).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private VideoDailyViewCountDto convertToDto(VideoDailyViewCount entity) {
+        VideoDailyViewCountDto dto = new VideoDailyViewCountDto();
+        dto.setVideoId(entity.getVideo().getId());
+        dto.setDate(entity.getDate());
+        dto.setViewCount(entity.getViewCount());
+        return dto;
+    }
+
+    private VideoDto convertToVideoDto(VideoEntity video) {
+        VideoDto videoDto = new VideoDto();
+        videoDto.setId(video.getId());
+        videoDto.setTitle(video.getTitle());
+        videoDto.setUrl(video.getUrl());
+        videoDto.setViewCount(video.getViewCount());
+        videoDto.setDuration(video.getDuration());
+        videoDto.setAds(video.getAds().stream().map(this::convertToAdDto).collect(Collectors.toList()));
+        return videoDto;
+    }
+
+    private AdDto convertToAdDto(AdEntity ad) {
+        AdDto adDto = new AdDto();
+        adDto.setId(ad.getId());
+        adDto.setTitle(ad.getTitle());
+        adDto.setUrl(ad.getUrl());
+        adDto.setViewCount(ad.getViewCount());
+        adDto.setVideoIds(ad.getVideos().stream().map(VideoEntity::getId).collect(Collectors.toList()));
+        return adDto;
     }
 
     private VideoDailyViewCountDto convertToVideoDailyViewCountDto(VideoDailyViewCount entity) {

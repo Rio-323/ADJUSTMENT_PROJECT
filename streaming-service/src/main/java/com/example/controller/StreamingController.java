@@ -91,7 +91,8 @@ public class StreamingController {
 
     // 특정 비디오의 일별 시청 수를 조회하는 요청을 처리
     @GetMapping("/videos/{videoId}/daily-views")
-    public ResponseEntity<List<VideoDailyViewCountDto>> getDailyVideoViewCount(@PathVariable Long videoId, @RequestParam String date) {
+    public ResponseEntity<List<VideoDailyViewCountDto>> getDailyVideoViewCount(@PathVariable Long videoId,
+                                                                               @RequestParam String date) {
         logger.debug("Received request to get daily video view count for videoId: {} on date: {}", videoId, date);
         LocalDate localDate = LocalDate.parse(date);
         List<VideoDailyViewCountDto> dailyViewCounts = streamingService.getDailyVideoViewCount(videoId, localDate);
@@ -100,10 +101,33 @@ public class StreamingController {
 
     // 특정 광고의 일별 시청 수를 조회하는 요청을 처리
     @GetMapping("/ads/{adId}/daily-views")
-    public ResponseEntity<List<AdDailyViewCountDto>> getDailyAdViewCount(@PathVariable Long adId, @RequestParam String date) {
+    public ResponseEntity<List<AdDailyViewCountDto>> getDailyAdViewCount(@PathVariable Long adId,
+                                                                         @RequestParam String date) {
         logger.debug("Received request to get daily ad view count for adId: {} on date: {}", adId, date);
         LocalDate localDate = LocalDate.parse(date);
         List<AdDailyViewCountDto> dailyViewCounts = streamingService.getDailyAdViewCount(adId, localDate);
         return ResponseEntity.status(HttpStatus.OK).body(dailyViewCounts);
+    }
+
+    @GetMapping("/streaming-service/videos/daily-views")
+    public List<VideoDailyViewCountDto> getDailyVideoStatistics(@RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return streamingService.getDailyVideoStatistics(localDate);
+    }
+
+    @GetMapping("/streaming-service/videos/weekly-views")
+    public List<VideoDailyViewCountDto> getWeeklyVideoStatistics(@RequestParam String startDate,
+                                                                 @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        return streamingService.getWeeklyVideoStatistics(start, end);
+    }
+
+    @GetMapping("/streaming-service/videos/monthly-views")
+    public List<VideoDailyViewCountDto> getMonthlyVideoStatistics(@RequestParam String startDate,
+                                                                  @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        return streamingService.getMonthlyVideoStatistics(start, end);
     }
 }
