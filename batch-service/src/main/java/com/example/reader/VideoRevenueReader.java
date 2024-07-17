@@ -14,24 +14,25 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 @Configuration
-public class VideoStatsReader {
+public class VideoRevenueReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(VideoStatsReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(VideoRevenueReader.class);
 
     private final DataSource dataSource;
 
-    public VideoStatsReader(DataSource dataSource) {
+    public VideoRevenueReader(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    @Bean("videoStatsJdbcReader")
+    @Bean("videoRevenueJdbcReader")
     @StepScope
-    public JdbcCursorItemReader<VideoDailyViewCount> videoStatsJdbcReader(@Value("#{jobParameters['startDate']}") String startDate,
-                                                                          @Value("#{jobParameters['endDate']}") String endDate) {
+    public JdbcCursorItemReader<VideoDailyViewCount> videoRevenueJdbcReader(@Value("#{jobParameters['startDate']}") String startDate,
+                                                                            @Value("#{jobParameters['endDate']}") String endDate) {
         String sql = "SELECT * FROM video_daily_view_counts WHERE date BETWEEN ? AND ?";
         logger.info("Executing query: {} with startDate: {} and endDate: {}", sql, startDate, endDate);
+
         return new JdbcCursorItemReaderBuilder<VideoDailyViewCount>()
-                .name("videoStatsReader")
+                .name("videoRevenueReader")
                 .dataSource(dataSource)
                 .sql(sql)
                 .preparedStatementSetter((ps) -> {

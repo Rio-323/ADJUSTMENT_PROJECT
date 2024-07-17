@@ -8,6 +8,8 @@ import com.example.vo.RequestUser;
 import com.example.vo.ResponseUser;
 import io.jsonwebtoken.Jwts;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ public class UserController {
 
     private final Environment env;
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     public UserController(Environment env, UserService userService) {
@@ -75,6 +78,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public ResponseEntity<ResponseUser> getUserDetails(@RequestHeader("Authorization") String token) {
+        logger.info("Received request to get user details with token: {}", token);
         String jwt = token.replace("Bearer ", "");
         String userId = Jwts.parser()
                 .setSigningKey(env.getProperty("token.secret").getBytes(StandardCharsets.UTF_8))
@@ -82,10 +86,12 @@ public class UserController {
                 .getBody()
                 .getSubject();
 
+        logger.info("Extracted user ID from token: {}", userId);
         UserDto userDto = userService.getUserById(userId);
         ResponseUser returnValue = new ModelMapper().map(userDto, ResponseUser.class);
         return ResponseEntity.status(HttpStatus.OK).body(returnValue);
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {

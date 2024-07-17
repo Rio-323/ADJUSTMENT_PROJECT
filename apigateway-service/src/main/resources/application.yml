@@ -41,6 +41,16 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /${segment}
 
+        - id: user-service-users-me
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users/me
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/me/(?<segment>.*), /${segment}
+            - StripPrefix=1
+
         - id: user-service-admin
           uri: lb://USER-SERVICE
           predicates:
@@ -59,6 +69,16 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /${segment}
             - AuthorizationHeaderFilter
+
+        - id: user-service-users-me
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users/me
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+            - StripPrefix=1
 
         - id: streaming-service-play
           uri: lb://STREAMING-SERVICE

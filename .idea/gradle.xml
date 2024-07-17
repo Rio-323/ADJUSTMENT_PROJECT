@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/apigateway-service" />
             <option value="$PROJECT_DIR$/batch-service" />
             <option value="$PROJECT_DIR$/eureka-server" />
-            <option value="$PROJECT_DIR$/statistics-service" />
             <option value="$PROJECT_DIR$/streaming-service" />
             <option value="$PROJECT_DIR$/user-service" />
           </set>

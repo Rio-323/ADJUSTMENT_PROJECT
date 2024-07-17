@@ -1,6 +1,6 @@
 package com.example.scheduler;
 
-import com.example.config.VideoStatsJobConfig;
+import com.example.config.MultiStepJobConfig;
 import com.example.repository.VideoDailyViewCountRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameter;
@@ -26,14 +26,14 @@ import java.util.Optional;
 public class BatchScheduler implements ApplicationRunner {
 
     private final JobLauncher jobLauncher;
-    private final Job job;
+    private final Job combinedJob;
     private final VideoDailyViewCountRepository videoDailyViewCountRepository;
     private static final Logger logger = LoggerFactory.getLogger(BatchScheduler.class);
 
     @Autowired
-    public BatchScheduler(JobLauncher jobLauncher, VideoStatsJobConfig jobConfig, VideoDailyViewCountRepository videoDailyViewCountRepository) {
+    public BatchScheduler(JobLauncher jobLauncher, Job combinedJob, VideoDailyViewCountRepository videoDailyViewCountRepository) {
         this.jobLauncher = jobLauncher;
-        this.job = jobConfig.videoStatsJob();
+        this.combinedJob = combinedJob;
         this.videoDailyViewCountRepository = videoDailyViewCountRepository;
     }
 
@@ -46,7 +46,7 @@ public class BatchScheduler implements ApplicationRunner {
         parameters.put("startDate", new JobParameter<>(today.toString(), String.class));
         parameters.put("endDate", new JobParameter<>(today.toString(), String.class));
         JobParameters jobParameters = new JobParameters(parameters);
-        jobLauncher.run(job, jobParameters);
+        jobLauncher.run(combinedJob, jobParameters);
     }
 
     @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul") // 매주 월요일 자정에 실행 (한국 시간)
@@ -60,7 +60,7 @@ public class BatchScheduler implements ApplicationRunner {
         parameters.put("startDate", new JobParameter<>(startOfWeek.toString(), String.class));
         parameters.put("endDate", new JobParameter<>(endOfWeek.toString(), String.class));
         JobParameters jobParameters = new JobParameters(parameters);
-        jobLauncher.run(job, jobParameters);
+        jobLauncher.run(combinedJob, jobParameters);
     }
 
     @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul") // 매월 1일 자정에 실행 (한국 시간)
@@ -74,7 +74,7 @@ public class BatchScheduler implements ApplicationRunner {
         parameters.put("startDate", new JobParameter<>(startOfMonth.toString(), String.class));
         parameters.put("endDate", new JobParameter<>(endOfMonth.toString(), String.class));
         JobParameters jobParameters = new JobParameters(parameters);
-        jobLauncher.run(job, jobParameters);
+        jobLauncher.run(combinedJob, jobParameters);
     }
 
     @Override
@@ -92,11 +92,11 @@ public class BatchScheduler implements ApplicationRunner {
             Map<String, JobParameter<?>> parameters = new HashMap<>();
             parameters.put("run.id", new JobParameter<>(String.valueOf(System.currentTimeMillis()), String.class));
             parameters.put("startDate", new JobParameter<>(oldestDate.toString(), String.class));
-            parameters.put("endDate", new JobParameter<>(today.toString(), String.class));
+            parameters.put("endDate", new JobParameter<>(today.toString(),String.class));
             JobParameters jobParameters = new JobParameters(parameters);
-            jobLauncher.run(job, jobParameters);
+            jobLauncher.run(combinedJob, jobParameters);
         } else {
-            logger.info("No data found in VideoDailyViewCount repository.");
+            logger.info("No data found in VideoDailyViewCountRepository.");
         }
     }
 }

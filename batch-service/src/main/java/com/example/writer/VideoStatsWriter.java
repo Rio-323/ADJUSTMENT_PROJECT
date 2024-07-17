@@ -7,25 +7,26 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
 
-@Configuration
+@Component
 public class VideoStatsWriter {
 
-    private JdbcBatchItemWriter<VideoStatistics> jdbcWriter;
+    private final JdbcBatchItemWriter<VideoStatistics> jdbcWriter;
     private static final Logger logger = LoggerFactory.getLogger(VideoStatsWriter.class);
 
-    @Bean
-    public ItemWriter<VideoStatistics> writer(DataSource dataSource) {
+    public VideoStatsWriter(DataSource dataSource) {
         jdbcWriter = new JdbcBatchItemWriter<>();
         jdbcWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
         jdbcWriter.setSql("INSERT INTO video_statistics (video_id, period, video_rank, view_count, play_time, type) VALUES (:videoId, :period, :videoRank, :viewCount, :playTime, :type)");
         jdbcWriter.setDataSource(dataSource);
         jdbcWriter.afterPropertiesSet();
+    }
+
+    public JdbcBatchItemWriter<VideoStatistics> videoStatsWriter() {
         return jdbcWriter;
     }
 

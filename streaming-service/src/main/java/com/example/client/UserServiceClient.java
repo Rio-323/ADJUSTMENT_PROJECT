@@ -1,6 +1,7 @@
 package com.example.client;
 
 import com.example.dto.UserResponse;
+import feign.FeignException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,8 +17,17 @@ public interface UserServiceClient {
     UserResponse getUserDetails(@RequestHeader("Authorization") String token);
 
     default UserResponse getUserDetailsWithLogging(String token) {
-        UserResponse userResponse = getUserDetails(token);
-        logger.debug("User details from UserServiceClient: " + userResponse);
-        return userResponse;
+        logger.debug("Token being sent: " + token);
+        try {
+            UserResponse userResponse = getUserDetails(token);
+            logger.debug("User details from UserServiceClient: " + userResponse);
+            return userResponse;
+        } catch (FeignException e) {
+            logger.error("Error occurred while fetching user details: " + e.getMessage());
+            if (e.responseBody().isPresent()) {
+                logger.error("Response body: " + e.responseBody().get());
+            }
+            throw e;
+        }
     }
 }

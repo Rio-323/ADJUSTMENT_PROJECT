@@ -42,7 +42,7 @@ public class WebSecurity {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/**")
-                        .access(new WebExpressionAuthorizationManager("hasIpAddress('192.168.45.134')")) // IP 제한 설정 확인
+                        .access(new WebExpressionAuthorizationManager("hasIpAddress('192.168.45.159')")) // IP 제한 설정 확인
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout

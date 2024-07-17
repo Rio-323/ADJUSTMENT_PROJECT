@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "video_statistics")
-public class VideoStatistics {
+@Table(name = "video_revenue")
+public class VideoRevenue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,15 +18,12 @@ public class VideoStatistics {
     @Column(nullable = false)
     private String period;
 
-    @Column(name = "video_rank", nullable = false)
-    private int videoRank;
+    @Column(nullable = false)
+    private String totalRevenue;
 
     @Column(nullable = false)
-    private int viewCount;
+    private String videoRevenue;
 
     @Column(nullable = false)
-    private int playTime;
-
-    @Column(nullable = false)
-    private String type; // "view" or "playTime"
+    private String adRevenue;
 }

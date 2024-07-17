@@ -1,6 +1,5 @@
 package com.example.listener;
 
-import com.example.entity.VideoEntity;
 import com.example.entity.VideoStatistics;
 import com.example.processor.VideoStatsProcessor;
 import com.example.writer.VideoStatsWriter;
@@ -11,10 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 @Component
 public class VideoStatsStepExecutionListener extends StepExecutionListenerSupport {
@@ -29,34 +26,31 @@ public class VideoStatsStepExecutionListener extends StepExecutionListenerSuppor
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        // videoEntityMap 초기화 예제 코드 (데이터베이스에서 데이터 로드 등)
-        Map<Long, VideoEntity> videoEntityMap = new HashMap<>();
-        // videoEntityMap을 실제 데이터로 초기화하는 코드 추가
-        // 예: videoEntityMap.put(1L, new VideoEntity(...));
+        try {
+            // 오늘의 날짜를 기준으로 period 값을 생성
+            String dailyPeriod = LocalDate.now().toString();
+            List<VideoStatistics> dailySummariesList = processor.generateFinalSummaries(dailyPeriod);
+            writer.writeSummaries(dailySummariesList);
 
-        processor.setVideoEntityMap(videoEntityMap); // 초기화한 videoEntityMap 설정
+            // 주간 period 계산
+            LocalDate now = LocalDate.now();
+            WeekFields weekFields = WeekFields.of(Locale.getDefault());
+            LocalDate startOfWeek = now.with(weekFields.dayOfWeek(), 1);
+            LocalDate endOfWeek = now.with(weekFields.dayOfWeek(), 7);
+            String weeklyPeriod = startOfWeek + " ~ " + endOfWeek;
+            List<VideoStatistics> weeklySummariesList = processor.generateFinalSummaries(weeklyPeriod);
+            writer.writeSummaries(weeklySummariesList);
 
-        // 오늘의 날짜를 기준으로 period 값을 생성
-        String dailyPeriod = LocalDate.now().toString();
-        List<VideoStatistics> dailySummaries = processor.generateFinalSummaries(dailyPeriod);
-        writer.writeSummaries(dailySummaries);
+            // 월간 period 계산
+            LocalDate startOfMonth = now.withDayOfMonth(1);
+            LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+            String monthlyPeriod = startOfMonth + " ~ " + endOfMonth;
+            List<VideoStatistics> monthlySummariesList = processor.generateFinalSummaries(monthlyPeriod);
+            writer.writeSummaries(monthlySummariesList);
 
-        // 주간 period 계산
-        LocalDate now = LocalDate.now();
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
-        LocalDate startOfWeek = now.with(weekFields.dayOfWeek(), 1);
-        LocalDate endOfWeek = now.with(weekFields.dayOfWeek(), 7);
-        String weeklyPeriod = startOfWeek + " ~ " + endOfWeek;
-        List<VideoStatistics> weeklySummaries = processor.generateFinalSummaries(weeklyPeriod);
-        writer.writeSummaries(weeklySummaries);
-
-        // 월간 period 계산
-        LocalDate startOfMonth = now.withDayOfMonth(1);
-        LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
-        String monthlyPeriod = startOfMonth + " ~ " + endOfMonth;
-        List<VideoStatistics> monthlySummaries = processor.generateFinalSummaries(monthlyPeriod);
-        writer.writeSummaries(monthlySummaries);
-
-        return ExitStatus.COMPLETED;
+            return ExitStatus.COMPLETED;
+        } catch (Exception e) {
+            return ExitStatus.FAILED;
+        }
     }
 }

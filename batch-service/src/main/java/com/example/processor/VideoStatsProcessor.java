@@ -17,7 +17,7 @@ public class VideoStatsProcessor implements ItemProcessor<VideoDailyViewCount, V
 
     private final List<VideoDailyViewCount> viewCountList = new ArrayList<>();
     @Setter
-    private Map<Long, VideoEntity> videoEntityMap = new HashMap<>(); // 초기화 추가
+    private Map<Long, VideoEntity> videoEntityMap = new HashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(VideoStatsProcessor.class);
 
