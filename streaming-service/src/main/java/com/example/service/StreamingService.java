@@ -10,13 +10,17 @@ import com.example.repository.AdDailyViewCountRepository;
 import com.example.repository.AdRepository;
 import com.example.repository.VideoDailyViewCountRepository;
 import com.example.repository.VideoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,7 @@ public class StreamingService {
     private final VideoDailyViewCountRepository videoDailyViewCountRepository;
     private final AdDailyViewCountRepository adDailyViewCountRepository;
     private final UserServiceClient userServiceClient;
+    private static final Logger logger = LoggerFactory.getLogger(StreamingService.class);
 
     @Autowired
     public StreamingService(VideoRepository videoRepository, AdRepository adRepository,
@@ -41,9 +46,12 @@ public class StreamingService {
     }
 
     // 비디오 재생 시 호출되는 메서드
+    @Transactional
     public void playVideo(PlayRequest playRequest) {
-        VideoEntity video = videoRepository.findById(playRequest.getVideoId()).orElseThrow();
+        VideoEntity video = videoRepository.findByIdWithLock(playRequest.getVideoId())
+                .orElseThrow(() -> new RuntimeException("Video not found"));
         int currentPosition = video.getUserWatchPositions().getOrDefault(playRequest.getUserId(), 0);
+
         video.setViewCount(video.getViewCount() + 1);
 
         LocalDate today = LocalDate.now();
@@ -57,14 +65,15 @@ public class StreamingService {
             dailyViewCount.setViewCount(dailyViewCount.getViewCount() + 1);
         }
         videoDailyViewCountRepository.save(dailyViewCount);
-
         videoRepository.save(video);
+
         validateViewCounts(video);
     }
 
     // 비디오 일시 정지 시 호출되는 메서드
     public void pauseVideo(PauseRequest pauseRequest) {
-        VideoEntity video = videoRepository.findById(pauseRequest.getVideoId()).orElseThrow();
+        VideoEntity video = videoRepository.findById(pauseRequest.getVideoId())
+                .orElseThrow(() -> new RuntimeException("Video not found"));
         int pausePosition = pauseRequest.getCurrentPosition();
 
         if (pausePosition <= video.getDuration()) {
@@ -74,8 +83,10 @@ public class StreamingService {
     }
 
     // 광고 시청 시 호출되는 메서드
+    @Transactional
     public void adWatched(Long adId) {
-        AdEntity ad = adRepository.findById(adId).orElseThrow();
+        AdEntity ad = adRepository.findByIdWithLock(adId)
+                .orElseThrow(() -> new RuntimeException("Ad not found"));
         ad.setViewCount(ad.getViewCount() + 1);
 
         LocalDate today = LocalDate.now();
@@ -131,6 +142,7 @@ public class StreamingService {
         List<AdEntity> ads = (List<AdEntity>) adRepository.findAll();
         return ads.stream().map(this::convertToAdDto).collect(Collectors.toList());
     }
+
     // 모든 비디오를 조회하는 메서드
     public List<VideoDto> getAllVideos() {
         List<VideoEntity> videos = videoRepository.findAll();
@@ -139,8 +151,10 @@ public class StreamingService {
 
     // 특정 비디오와 광고의 전체 시청 수를 조회하는 메서드
     public Map<String, Integer> getVideoAndAdCounts(Long videoId, Long adId) {
-        VideoEntity video = videoRepository.findById(videoId).orElseThrow();
-        AdEntity ad = adRepository.findById(adId).orElseThrow();
+        VideoEntity video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new RuntimeException("Video not found"));
+        AdEntity ad = adRepository.findById(adId)
+                .orElseThrow(() -> new RuntimeException("Ad not found"));
 
         if (!ad.getVideos().contains(video)) {
             throw new RuntimeException("Ad does not belong to the specified video.");
@@ -155,16 +169,22 @@ public class StreamingService {
 
     // 특정 비디오의 일별 시청 수를 조회하는 메서드
     public List<VideoDailyViewCountDto> getDailyVideoViewCount(Long videoId, LocalDate date) {
-        VideoEntity video = videoRepository.findById(videoId).orElseThrow();
+        VideoEntity video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new RuntimeException("Video not found"));
         List<VideoDailyViewCount> dailyViewCounts = videoDailyViewCountRepository.findByVideoAndDateBetween(video, date, date);
         return dailyViewCounts.stream().map(this::convertToVideoDailyViewCountDto).collect(Collectors.toList());
     }
 
     // 특정 광고의 일별 시청 수를 조회하는 메서드
     public List<AdDailyViewCountDto> getDailyAdViewCount(Long adId, LocalDate date) {
-        AdEntity ad = adRepository.findById(adId).orElseThrow();
-        List<AdDailyViewCount> dailyViewCounts = adDailyViewCountRepository.findByAdAndDateBetween(ad, date, date);
-        return dailyViewCounts.stream().map(this::convertToAdDailyViewCountDto).collect(Collectors.toList());
+        Optional<AdEntity> adOpt = adRepository.findById(adId);
+        if (adOpt.isPresent()) {
+            AdEntity ad = adOpt.get();
+            List<AdDailyViewCount> dailyViewCounts = adDailyViewCountRepository.findByAdAndDateBetween(ad, date, date);
+            return dailyViewCounts.stream().map(this::convertToAdDailyViewCountDto).collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("Ad not found");
+        }
     }
 
     public List<VideoDailyViewCountDto> getDailyVideoStatistics(LocalDate date) {
