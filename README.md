@@ -36,6 +36,7 @@
 
 ## ⚓️ 아키텍처 및 ERD
 <details><summary>아키텍처</summary>
+    <img src="asset/제목을-입력해주세요_-001.png" alt="">
 </details>
 
 <br>
