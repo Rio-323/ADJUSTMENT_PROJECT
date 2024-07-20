@@ -28,13 +28,13 @@
 <br>
 
 ## ⚓️ 아키텍처 및 ERD
-<summary>아키텍처
-    
-</summary>
+<details><summary>아키텍처</summary>
+</details>
 
 <br>
 
-<summary>ERD
+<details>
+<summary>ERD</summary>
     <img src="asset/스크린샷%202024-07-20%20오후%201.28.49.png" alt="">
-</summary>
+</details>
 
