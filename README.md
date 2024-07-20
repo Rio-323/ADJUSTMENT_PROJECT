@@ -3,7 +3,7 @@
 
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white" alt=""/>
 <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=icloud&logoColor=white" alt=""/> <br>
-<img src="https://img.shields.io/badge/Spring batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/Mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/k6-7D64FF?style=for-the-badge&logo=k6&logoColor=white" alt=""/>
+<img src="https://img.shields.io/badge/Spring batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/Mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/k6-7D64FF?style=for-the-badge&logo=k6&logoColor=white" alt=""/> <img src="https://img.shields.io/badge/json web tokens-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt=""/>
 
 <br>
 
@@ -23,11 +23,12 @@
 <br>
 
 ## 🛠️ 기술 스택
-- 언어 : JAVA 21
-- DB : MYSQL
-- 빌드 도구 : Gradle
-- 프레임 워크 : Spring Boot 3.3.1
+- 언어 : JAVA (21)
+- DB : MYSQL (8.4.0)
+- 빌드 도구 : Gradle (8.5)
+- 프레임 워크 : Spring Boot (3.3.1)
 - 배포 방식 : Docker / Docker Compose
+- 배치 처리 : Spring Batch (5.1.2)
 - 인증 방식 : JWT(Json Web Token)
 - 통신 방식 : HTTP
 
