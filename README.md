@@ -3,7 +3,7 @@
 
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"/>
-<img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=icloud&logoColor=white"/> <br>
+<img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=icloud&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white"/>
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
 <img src="https://img.shields.io/badge/Mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
